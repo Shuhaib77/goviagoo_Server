@@ -1,7 +1,7 @@
 import { response } from "express";
 import Users from "../modals/userModal.js";
 import bcrypt from "bcryptjs";
-import { OAuth2Client }from "google-auth-library";
+import { OAuth2Client } from "google-auth-library";
 import dotenv from "dotenv";
 import tryCatch from "../middlewares/tryCatch.js";
 
@@ -26,18 +26,17 @@ export const loginuser = async (email, password) => {
 
 // ---------------------------------------------
 
-const client =new OAuth2Client(process.env.GOOGLE_CLIENT);
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT);
 export const googleVerify = async (idToken) => {
   try {
     const ticket = await client.verifyIdToken({
-        idToken:idToken,
-        audience:process.env.GOOGLE_CLIENT
-
+      idToken: idToken,
+      audience: process.env.GOOGLE_CLIENT,
     });
     const payload = ticket.getPayload();
     const { email, email_verified, name, picture } = payload;
-    console.log(email,"tgvt4v");
-    
+    console.log(email, "tgvt4v");
+
     if (!email_verified) {
       throw new Error("email is not verified");
     }
