@@ -13,9 +13,14 @@ const userSchema = mongoose.Schema({
     type: String,
     require: true,
   },
-  googleId:{
-    type:String
-  }
+  image: {
+    type: String,
+    require: true,
+  },
+  // googleId: {
+  //   type: String,
+  //   require:true
+  // },
 });
 
 const Users = mongoose.model("Users", userSchema);
