@@ -17,6 +17,12 @@ const userSchema = mongoose.Schema({
     type: String,
     require: true,
   },
+  savedRoadmaps: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Roadmap",
+    },
+  ],
   // googleId: {
   //   type: String,
   //   require:true
