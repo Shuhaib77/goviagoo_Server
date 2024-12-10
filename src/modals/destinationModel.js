@@ -1,21 +1,21 @@
 import mongoose from "mongoose";
 
 const destinationSchema = mongoose.Schema({
-  image: {
+  image:[ {
     type: String,
     require: true,
-  },
+  }],
   name: {
     type: String,
     require: true,
   },
   location: {
     latitude: {
-      type: String,
+      type: Number,
       require: true,
     },
     longitude: {
-      type: String,
+      type: Number,
       require: true,
     },
   },
@@ -33,5 +33,5 @@ const destinationSchema = mongoose.Schema({
   },
 });
 
-const Destination=mongoose.model("destination",destinationSchema)
+const Destination=mongoose.model("Destination",destinationSchema)
 export default Destination

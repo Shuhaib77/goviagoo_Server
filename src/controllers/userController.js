@@ -1,5 +1,5 @@
 import Users from "../modals/userModal.js";
-import { updateProfail, userProfail } from "../services/userService.js";
+import { updateProfail, userProfail, ViewAddedDestination } from "../services/userService.js";
 
 export const getUser = async (req, res) => {
   const { id } = req.params;
@@ -17,5 +17,24 @@ export const updateUser=async(req,res)=>{
   }
   const upUser= await updateProfail(id,req.body)
   res.send(upUser)
+
+}
+
+
+export const viewRoadmap=async(req,res)=>{
+  const {id}=req.params
+  if(!id){
+    res.status(404).json({message:"user not found"})
+  }
+
+  const data= await ViewAddedDestination(id)
+  if(!data){
+   return res.status(404).json({message:"not found your road Map"})
+  }
+  res.status(200).json({message:"findedd",data:data},)
+  
+
+
+
 
 }

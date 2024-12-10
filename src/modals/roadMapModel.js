@@ -1,55 +1,39 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
-
-const roadMapSchema=mongoose.Schema({
-    userId:{
-        type:mongoose.Schema.ObjectId,
-        ref:"Users"
+const roadMapSchema = mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Users",
+  },
+  name: {
+    type: "string",
+    require: true,
+  },
+  destinations: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Destination",
     },
-    name:{
-        type:"string",
-        require:true
+  ],
+  optimizeroute: [
+    {
+      type: String,
+      require: true,
     },
-    destinations:{
-        type:mongoose.Schema.ObjectId,
-        ref:"Destination"
-    },
-    optimizeroute:[
-        {
-            type:string,
-            require:true
-        }
-    ],
-    status:{
-        type:string,
-        require:true
+  ],
+  status: {
+    type: String,
+    require: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
-    },
-    createdAt:{
-        type:Date,
-        require:true
-    }
+const Roadmap = mongoose.model("Roadmap", roadMapSchema);
 
-
-
-})
-
-
-const Roadmap=mongoose.model("Roadmap",roadMapSchema)
-
-export default Roadmap
-
-
-
-
-
-
-
-
-
-
-
-
+export default Roadmap;
 
 // {
 //     "_id": "ObjectId",
