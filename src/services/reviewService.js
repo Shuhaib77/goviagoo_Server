@@ -1,7 +1,7 @@
 import Reviews from "../modals/reviewModel.js";
 import Users from "../modals/userModal.js";
 
-export const YourReview = async (id, body) => {
+export const YourReview = async (id, body,image) => {
   try {
     const user = await Users.findById(id);
     console.log(user);
@@ -20,10 +20,13 @@ export const YourReview = async (id, body) => {
       userId: user._id,
       title: body.title,
       review: body.review,
-      image: body.image,
+      image: image,
       loaction: body.location,
       date: body.date,
+      rating:null
     });
+    console.log(review);
+    
     user.reviews.push(review._id);
     await user.save();
     return review;
@@ -44,7 +47,7 @@ export const allReview = async () => {
   }
 };
 
-export const viewYourReview =async (id) => {
+export const viewYourReview = async (id) => {
   try {
     const user = await Users.findById(id).populate({
       path: "reviews",
@@ -54,7 +57,6 @@ export const viewYourReview =async (id) => {
     }
     return user.reviews;
   } catch (error) {
-    throw new Error(error)
-    
+    throw new Error(error);
   }
 };

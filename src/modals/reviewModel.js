@@ -5,6 +5,10 @@ const reviewSchema = mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Users",
   },
+  image: {
+    type: String,
+    require: true,
+  },
   title: {
     type: String,
     require: true,

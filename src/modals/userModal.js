@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const userSchema = mongoose.Schema({
   name: {
@@ -29,6 +29,12 @@ const userSchema = mongoose.Schema({
       ref: "Reviews",
     },
   ],
+  savedMap:[
+    {
+      type:Schema.ObjectId,
+      ref:"Saveroadmap"
+    }
+  ]
   // googleId: {
   //   type: String,
   //   require:true

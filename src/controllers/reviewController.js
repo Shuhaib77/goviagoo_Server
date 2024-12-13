@@ -10,7 +10,13 @@ export const addreview = async (req, res) => {
     return res.status(404).json("user not found");
   }
   const body = req.body;
-  const review = await YourReview(id, body);
+  console.log(id);
+  
+//   console.log(title,"bodyyy");
+const image=req.cloudinaryImageUrl
+
+
+  const review = await YourReview(id, body,image);
   if (!review) {
     return res.status(404).json({ message: "add review Failed" });
   }
@@ -27,6 +33,7 @@ export const getReview = async (req, res) => {
 
 export const userReview = async (req, res) => {
   const { id } = req.params;
+ 
   if (!id) {
     res.status(404).json("user not found");
   }

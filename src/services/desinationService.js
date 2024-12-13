@@ -3,6 +3,7 @@ import tryCatch from "../middlewares/tryCatch.js";
 import Destination from "../modals/destinationModel.js";
 import Roadmap from "../modals/roadMapModel.js";
 import Users from "../modals/userModal.js";
+import Saveroadmap from "../modals/roadMapSaveModel.js";
 
 export const createDestination = async (name, body) => {
   // const datas = await Destination.findOne({ name });
@@ -183,3 +184,31 @@ export const deleteYourDestination = async (did, uid) => {
     console.log(error);
   }
 };
+
+//saveRoadmap
+
+export const savedRoadMap = async (rid, uid) => {
+  const user = await Users.findById(uid);
+  if (!user) {
+    throw new Error("user not found");
+  }
+  const roadmap = await Roadmap.findById(rid);
+  if (!roadmap) {
+    throw new Error("road map not found");
+  }
+  const destinations = roadmap.destinations.map((item) => item);
+  let saveRoadMaps = await Saveroadmap.create({
+    userId: user._id,
+    destinationsId: [],
+  });
+  const dd = saveRoadMaps.destinationsId.push(...destinations);
+  await saveRoadMaps.save()
+  user.savedMap.push(saveRoadMaps._id)
+  await user.save()
+
+  return saveRoadMaps;
+};
+
+// export const viewSaved=(id)=>{
+
+// }
