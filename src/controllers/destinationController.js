@@ -1,8 +1,10 @@
+import { AwsClient } from "google-auth-library";
 import Destination from "../modals/destinationModel.js";
 import {
   addedToRoadMap,
   addtomapwithmap,
   createDestination,
+  deleteYourDestination,
   detinationView,
   getdestinationById,
 } from "../services/desinationService.js";
@@ -65,7 +67,9 @@ export const addToRoadMap = async (req, res) => {
   }
   const result = await addedToRoadMap(did, uid);
   if (!result) {
-    return res.status(404).json({ message: "addtoRoad map failed" });
+    return res
+      .status(404)
+      .json({ message: "destination alredy in your roadMap" });
   }
   res
     .status(200)
@@ -73,22 +77,36 @@ export const addToRoadMap = async (req, res) => {
 };
 
 export const addwithmap = async (req, res) => {
-  const body=req.body
+  const body = req.body;
   const { uid, dname } = req.params;
-  
+
   if (!dname) {
     return res.status(404).json({ message: "destination not found" });
   }
   if (!uid) {
     return res.status(404).json({ message: "user id Invalid" });
   }
-  const data = await addtomapwithmap(uid, dname,body);
+  const data = await addtomapwithmap(uid, dname, body);
   if (!data) {
-    return res.status(404).json("alredy in your road map");
+    return res.status(200).json("neww roamap created and added destination");
   }
   res.status(200).json({ message: "created roadmap", data });
 };
 
-
-
-
+//delete your destination service
+export const deleteRoadMap = async (req, res) => {
+  const { did, uid } = req.params;
+  console.log(did,uid);
+  
+  if (!did) {
+    return res.send(404).json({ message: "destination not found" });
+  }
+  if (!uid) {
+    return  res.send(404).json({ message: "user not found" });
+  }
+  const data = await deleteYourDestination(did,uid);
+  if (!data) {
+    return  res.status(404).json({ message: "deletion failed" });
+  }
+  res.status(200).json({ message: "deliton success full" ,data});
+};

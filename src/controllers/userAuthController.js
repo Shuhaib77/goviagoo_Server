@@ -14,10 +14,12 @@ let e = null;
 // let pass = null;
 
 export const register = async (req, res) => {
+  console.log(req.body);
+  
   const { email, password } = req.body;
   // pass = await bcrypt.hash(password, 10);
   if (!email) {
-    return res.status(404).json({ message: "mail password are require " });
+    return res.status(404).json({ message: "email password are require " });
   }
   // console.log(pass);
   e = email;

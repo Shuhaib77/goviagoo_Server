@@ -23,6 +23,12 @@ const userSchema = mongoose.Schema({
       ref: "Roadmap",
     },
   ],
+  reviews: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Reviews",
+    },
+  ],
   // googleId: {
   //   type: String,
   //   require:true

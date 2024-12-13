@@ -7,8 +7,8 @@ import uploadimage from "../middlewares/multer.js";
 const route=express.Router()
 
 
-route.post('/register',register)
-route.post('/verifyotp' , uploadimage,veryfyotp)
+route.post('/register',uploadimage,tryCatch(register) )
+route.post('/verifyotp' , uploadimage,tryCatch(veryfyotp) )
 route.post('/login',tryCatch(login))
 route.post("/googlelogin",tryCatch(googleauth))
 
