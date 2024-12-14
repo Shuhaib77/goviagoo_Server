@@ -187,28 +187,71 @@ export const deleteYourDestination = async (did, uid) => {
 
 //saveRoadmap
 
+// export const savedRoadMap = async (rid, uid) => {
+//   const user = await Users.findById(uid);
+//   if (!user) {
+//     throw new Error("user not found");
+//   }
+//   const roadmap = await Roadmap.findById(rid);
+//   if (!roadmap) {
+//     throw new Error("road map not found");
+//   }
+//   const destinations = roadmap.destinations.map((item) => item);
+//   let saveRoadMaps = await Saveroadmap.create({
+//     userId: user._id,
+//     destinationsId: [],
+//   });
+//   const dd = saveRoadMaps.destinationsId.push(...destinations);
+//   await saveRoadMaps.save()
+//   user.savedMap.push(saveRoadMaps._id)
+//   const savedRoadmapee=user.savedRoadmaps
+//   // savedRoadmapee={$set:{ savedRoadmapee:[]}}
+//   await Users.findByIdAndUpdate(uid,{savedRoadmaps:[]})
+//   await user.save()
+//   await Roadmap.findByIdAndDelete(roadmap._id)
+//   return saveRoadMaps;
+// };
+
 export const savedRoadMap = async (rid, uid) => {
   const user = await Users.findById(uid);
   if (!user) {
-    throw new Error("user not found");
+    throw new Error("User not found");
   }
+
   const roadmap = await Roadmap.findById(rid);
   if (!roadmap) {
-    throw new Error("road map not found");
+    throw new Error("Road map not found");
   }
-  const destinations = roadmap.destinations.map((item) => item);
-  let saveRoadMaps = await Saveroadmap.create({
-    userId: user._id,
-    destinationsId: [],
-  });
-  const dd = saveRoadMaps.destinationsId.push(...destinations);
-  await saveRoadMaps.save()
-  user.savedMap.push(saveRoadMaps._id)
-  await user.save()
+  const destinations = roadmap.destinations;
 
-  return saveRoadMaps;
+  const saveRoadMap = await Saveroadmap.create({
+    userId: user._id,
+    destinationsId: destinations,
+  });
+
+  user.savedMap.push(saveRoadMap._id);
+
+  user.savedRoadmaps = user.savedRoadmaps.filter(
+    (mapId) => mapId.toString() !== rid
+  );
+
+  await user.save();
+  await Roadmap.findByIdAndDelete(rid);
+
+  return saveRoadMap;
 };
 
-// export const viewSaved=(id)=>{
+export const viewSaved = async (id) => {
+  console.log(id,"swsw");
+   const user = await Users.findById(id).populate({
+    path:"savedMap",
+    populate:"destinationsId"
 
-// }
+  });
+  console.log(user);
+  
+  if (!user) {
+    throw new error("user not foundd");
+  }
+  return user;
+};

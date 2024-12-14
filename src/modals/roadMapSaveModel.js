@@ -11,11 +11,11 @@ const saveSchema = mongoose.Schema({
   },
   destinationsId: [{
     type: mongoose.Schema.ObjectId,
-    ref: "Roadmap",
+    ref: "Destination",
   }],
 });
 
 
-const Saveroadmap=mongoose.model("Savedroadmap",saveSchema)
+const Saveroadmap=mongoose.model("Saveroadmap",saveSchema)
 
 export default Saveroadmap
