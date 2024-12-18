@@ -6,13 +6,13 @@ import Users from "../modals/userModal.js";
 import Saveroadmap from "../modals/roadMapSaveModel.js";
 
 export const createDestination = async (name, body) => {
-  // const datas = await Destination.findOne({ name });
-  // if (datas) {
-  //   throw new Error("destination alredy exist");
-  //   // return res.status(404).json("destination alredy exist");
-  // }
+  const datas = await Destination.findOne({ name });
+  if (datas) {
+    throw new Error("destination alredy exist");
+    // return res.status(404).json("destination alredy exist");
+  }
 
-  const newData = Destination(body);
+  const newData =new Destination(body);
   await newData.save();
   return newData;
 };

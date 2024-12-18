@@ -34,6 +34,12 @@ const userSchema = mongoose.Schema({
       type:Schema.ObjectId,
       ref:"Saveroadmap"
     }
+  ],
+  bookings:[
+    {
+      type:Schema.ObjectId,
+      ref:"stayBooking"
+    }
   ]
   // googleId: {
   //   type: String,
