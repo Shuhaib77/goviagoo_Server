@@ -39,7 +39,10 @@ export const satywithLocation = async (lat, lng) => {
     const stay = await Stay.find({
       "location.latitude": lat,
       "location.longitude": lng,
-    });
+    })
+    // .populate({
+    //   path:""
+    // })
     console.log(stay);
     if (!stay) {
       throw new Error("cant find accommdation for the place");
@@ -49,6 +52,26 @@ export const satywithLocation = async (lat, lng) => {
     throw error;
   }
 };
+
+export const stayWithId = async (id) => {
+  console.log(id);
+
+  try {
+    const stay = await Stay.findOne({
+    _id:id
+    })
+    
+    console.log(stay);
+    if (!stay) {
+      throw new Error("cant get details for the stay");
+    }
+    return stay;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 export const bookYourStay = async (uid, sid, body) => {
   const user = await Users.findById(uid);
@@ -81,5 +104,4 @@ export const bookYourStay = async (uid, sid, body) => {
 
   return findBookings;
 };
-
 

@@ -1,7 +1,11 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const staySchema = mongoose.Schema(
   {
+    // destinationId:{
+    //     type:Schema.ObjectId,
+    //     ref:"Destination"
+    // },
     name: {
       type: String,
       require: true,
