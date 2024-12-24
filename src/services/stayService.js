@@ -1,11 +1,12 @@
 import stayBooking from "../modals/bookStayModel.js";
 import Stay from "../modals/stayModel.js";
 import Users from "../modals/userModal.js";
-import paypal from 'paypal-rest-sdk'
-import dotenv from "dotenv"
+import paypal from "paypal-rest-sdk";
+import dotenv from "dotenv";
+import cron from "node-cron";
+import moment from "moment";
 
-dotenv.config()
-
+dotenv.config();
 
 paypal.configure({
   mode: "sandbox",
@@ -50,7 +51,7 @@ export const satywithLocation = async (lat, lng) => {
     const stay = await Stay.find({
       "location.latitude": lat,
       "location.longitude": lng,
-    })
+    });
     // .populate({
     //   path:""
     // })
@@ -69,20 +70,18 @@ export const stayWithId = async (id) => {
 
   try {
     const stay = await Stay.findOne({
-    _id:id
-    })
-    
+      _id: id,
+    });
+
     console.log(stay);
     if (!stay) {
       throw new Error("cant get details for the stay");
     }
     return stay;
-
   } catch (error) {
     throw error;
   }
 };
-
 
 export const bookYourStay = async (uid, sid, body) => {
   const user = await Users.findById(uid);
@@ -93,6 +92,7 @@ export const bookYourStay = async (uid, sid, body) => {
   }
 
   const { rate, roomNo, days, status, updatedAt } = body;
+  console.log(rate, roomNo, days, status, updatedAt);
 
   let findBookings = await stayBooking.findOne({
     stay: stay._id,
@@ -109,7 +109,7 @@ export const bookYourStay = async (uid, sid, body) => {
       payment_method: "paypal",
     },
     redirect_urls: {
-      return_url: `http://localhost:3000/api/${uid}/${sid}/${rate}/success`,
+      return_url: `http://localhost:3000/api/staybook/${uid}/${sid}/${rate}/${roomNo}/${days}/success`,
       cancel_url: "http://localhost:3000/api/cancel",
     },
     transactions: [
@@ -154,6 +154,7 @@ export const bookYourStay = async (uid, sid, body) => {
       } else {
         for (let link of payment.links) {
           if (link.rel === "approval_url") {
+            console.log(link.href);
             return resolve({ approval_url: link.href });
           }
         }
@@ -161,47 +162,90 @@ export const bookYourStay = async (uid, sid, body) => {
       }
     });
   });
-  
+
   return m;
-  
 };
 
-export const executePayment = async (id, sid, rate, payerId, paymentId) => {
+export const executePayment = async (
+  uid,
+  sid,
+  rate,
+  payerId,
+  paymentId,
+  roomNo,
+  days
+) => {
+  console.log(uid, sid, rate, payerId, paymentId, roomNo, days);
+
   const execute_payment_json = {
     payer_id: payerId,
     transactions: [
       {
         amount: {
           currency: "USD",
-          total: rate.toString(),
+          total: rate,
         },
       },
     ],
   };
 
-  const payment = await new Promise((resolve, reject) => {
-    paypal.payment.execute(paymentId, execute_payment_json, (error, payment) => {
-      if (error) return reject(error);
-      resolve(payment);
-    });
-  });
+  // const payment = await new Promise((resolve, reject) => {
+  //   paypal.payment.execute(paymentId, execute_payment_json, (error, payment) => {
+  //     if (error) return reject(error);
+  //     resolve(payment);
+  //   });
+  // });
 
-  const user = await Users.findById(id);
-  const stay = await Stay.findById(sid);
+  paypal.payment.execute(
+    paymentId,
+    execute_payment_json,
+    async function (error, payment) {
+      if (error) {
+        console.error("Payment execution error:", error.response);
+        return res.status(500).send("Payment execution failed");
+      } else {
+        // console.log("Payment success:", JSON.stringify(payment));
 
-  if (!user || !stay) {
-    throw new Error("User or stay not found");
-  }
+        // const paymentinfo = payment.payer.payer_info;
+        // const transaction = payment.transactions;
+        const user = await Users.findById(uid);
+        const stay = await Stay.findById(sid);
 
-  const booking = new stayBooking({
-    stay: stay._id,
-    userId: user._id,
-    status: true,
-    days: payment.transactions[0].amount.total / stay.rate,
-    rate,
-    roomNo: payment.transactions[0].item_list.items[0].sku,
-  });
-  await booking.save();
+        if (!user || !stay) {
+          throw new Error("User or stay not found");
+        }
 
-  return booking;
+        const booking = new stayBooking({
+          stay: stay._id,
+          userId: user._id,
+          status: true,
+          days: days,
+          rate,
+          roomNo: roomNo,
+        });
+        await booking.save();
+
+        cron.schedule("0 0 * * *", async () => {
+          const currentdate = moment().toDate();
+          const expirdBookings = await stayBooking.updateMany(
+            {
+              status: true,
+              createdAt: {
+                $lte: moment(currentdate).subtract("days", 1).toDate(),
+              },
+            },
+            { status: false }
+          );
+          console.log(
+            `${expirdBookings.modifiedCount} bookings updated to false`
+          );
+        });
+
+        return booking;
+       // return res.redirect('https://plashoe-e.vercel.app/paymentstatus');
+      }
+    }
+  );
+
+ 
 };

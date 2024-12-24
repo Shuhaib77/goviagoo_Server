@@ -2,6 +2,7 @@ import Stay from "../modals/stayModel.js";
 import {
   bookYourStay,
   createStay,
+  executePayment,
   getStays,
   satywithLocation,
   stayWithId,
@@ -73,11 +74,15 @@ export const BookStay = async (req, res) => {
 };
 
 export const paymentExecute = async (req, res) => {
-  const { id, sid, rate } = req.params;
+  const { uid, sid, rate,roomNo,days } = req.params;
+  console.log(uid, sid, rate,roomNo,days ,"lfrlfd");
+  
   const { PayerID: payerId, paymentId } = req.query;
+  console.log( payerId, paymentId);
+  
 
   try {
-    const booking = await executePayment(id, sid, rate, payerId, paymentId);
+    const booking = await executePayment(uid, sid, rate, payerId, paymentId,roomNo,days);
     res.status(200).json({ message: "Payment successful", booking });
   } catch (error) {
     res.status(500).json({ message: "Payment execution failed", error: error.message });
