@@ -1,5 +1,6 @@
 import express from "express";
-import { addStay, allStay, BookStay, getStayWithLocation, stayById } from "../controllers/stayController.js";
+import { addStay, allStay, BookStay, getStayWithLocation, paymentExecute, stayById } from "../controllers/stayController.js";
+
 
 
 const AccommadationRote=express.Router()
@@ -10,5 +11,13 @@ AccommadationRote.get("/get/stay/location/:lat/:lng",getStayWithLocation)
 AccommadationRote.get("/get/stay/:id",stayById)
 
 AccommadationRote.post("/stay/book/:sid/:uid",BookStay)
+AccommadationRote.post("/staybook/:uid/:sid/:rate/success",paymentExecute)
+AccommadationRote.post("/cancel")
+
+// proute.post('/pay/:id', trycatchmidle(createPayment));
+// proute.get('/:id/:totalAmount/success', trycatchmidle(executePayment) );
+// proute.get('/cancel', trycatchmidle(cancelPayment) );
+
+
 
  export default AccommadationRote

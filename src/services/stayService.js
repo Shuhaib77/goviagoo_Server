@@ -1,6 +1,17 @@
 import stayBooking from "../modals/bookStayModel.js";
 import Stay from "../modals/stayModel.js";
 import Users from "../modals/userModal.js";
+import paypal from 'paypal-rest-sdk'
+import dotenv from "dotenv"
+
+dotenv.config()
+
+
+paypal.configure({
+  mode: "sandbox",
+  client_id: process.env.PAYPAL_CLIENT_ID,
+  client_secret: process.env.PAYPAL_CLIENT_SECRET,
+});
 
 export const createStay = async (name, body) => {
   let stay = await Stay.findOne({
@@ -76,32 +87,121 @@ export const stayWithId = async (id) => {
 export const bookYourStay = async (uid, sid, body) => {
   const user = await Users.findById(uid);
   const stay = await Stay.findById(sid);
-  console.log(uid,sid);
 
   if (!user || !stay) {
-    throw new Error("stay or user Not foundd");
+    throw new Error("Stay or user not found");
   }
+
   const { rate, roomNo, days, status, updatedAt } = body;
-  const lastrate = days*rate;
-  console.log(rate, roomNo, days, status, updatedAt, "ledle3dle3d");
+
   let findBookings = await stayBooking.findOne({
     stay: stay._id,
     roomNo: roomNo,
     status: true,
   });
   if (findBookings) {
-    throw new Error("slot allredy bookeddd");
+    throw new Error("Room already booked");
   }
-  findBookings = new stayBooking({
-    stay: stay._id,
-    userId: user._id,
-    status: status,
-    days: days,
-    rate: lastrate,
-    roomNo: roomNo,
-  });
-  await findBookings.save();
 
-  return findBookings;
+  const create_payment_json = {
+    intent: "sale",
+    payer: {
+      payment_method: "paypal",
+    },
+    redirect_urls: {
+      return_url: `http://localhost:3000/api/${uid}/${sid}/${rate}/success`,
+      cancel_url: "http://localhost:3000/api/cancel",
+    },
+    transactions: [
+      {
+        item_list: {
+          items: [
+            {
+              name: stay.name,
+              sku: "001",
+              price: rate,
+              currency: "USD",
+              quantity: 1,
+            },
+          ],
+        },
+        amount: {
+          currency: "USD",
+          total: rate,
+        },
+        description: "Booking for stay accommodation",
+      },
+    ],
+  };
+
+  // const payment = await new Promise((resolve, reject) => {
+  //   paypal.payment.create(create_payment_json, (error, payment) => {
+  //     if (error) return reject(error);
+  //     resolve(payment);
+  //   });
+  // });
+
+  // const approvalUrl = payment.links.find((link) => link.rel === "approval_url");
+  // if (!approvalUrl) {
+  //   throw new Error("No approval URL found");
+  // }
+
+  const m = await new Promise((resolve, reject) => {
+    paypal.payment.create(create_payment_json, function (error, payment) {
+      if (error) {
+        console.error("Error creating payment:", error);
+        return reject("Payment creation failed");
+      } else {
+        for (let link of payment.links) {
+          if (link.rel === "approval_url") {
+            return resolve({ approval_url: link.href });
+          }
+        }
+        return reject("No approval URL found");
+      }
+    });
+  });
+  
+  return m;
+  
 };
 
+export const executePayment = async (id, sid, rate, payerId, paymentId) => {
+  const execute_payment_json = {
+    payer_id: payerId,
+    transactions: [
+      {
+        amount: {
+          currency: "USD",
+          total: rate.toString(),
+        },
+      },
+    ],
+  };
+
+  const payment = await new Promise((resolve, reject) => {
+    paypal.payment.execute(paymentId, execute_payment_json, (error, payment) => {
+      if (error) return reject(error);
+      resolve(payment);
+    });
+  });
+
+  const user = await Users.findById(id);
+  const stay = await Stay.findById(sid);
+
+  if (!user || !stay) {
+    throw new Error("User or stay not found");
+  }
+
+  const booking = new stayBooking({
+    stay: stay._id,
+    userId: user._id,
+    status: true,
+    days: payment.transactions[0].amount.total / stay.rate,
+    rate,
+    roomNo: payment.transactions[0].item_list.items[0].sku,
+  });
+  await booking.save();
+
+  return booking;
+};
