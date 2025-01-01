@@ -22,6 +22,11 @@ const foodSpotBookingSchema = mongoose.Schema({
     type: Number,
     require: true,
   },
+  date:{
+    type:String,
+    require:true
+
+  },
   rate: {
     type: Number,
     require: true,

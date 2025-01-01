@@ -1,4 +1,4 @@
-import { addSpot, foodWithId, foodwithLocation, getSpot } from "../services/foodSpotService.js";
+import { addSpot, bookYourFood, executePayment, foodWithId, foodwithLocation, getSpot } from "../services/foodSpotService.js";
 
 export const addFoodSpots = async (req, res) => {
   const { name } = req.body;
@@ -53,5 +53,32 @@ export const foodById = async (req,res) => {
     }
     res.status(200).json({ message: "foodspot finded for the place", data: data });
   };
+
+
+  export const BookFoodSpot = async(req, res) => {
+    const {  fid,uid } = req.params;
+    console.log(uid ,fid,"lololoo");
+    const body = req.body;
+    try {
+      const data = await bookYourFood( fid,uid,body);
+      res.status(200).json({ message: "Booking initiated", data:data });
+    } catch (error) {
+      res.status(400).json({ message: "Booking failed", error: error.message });
+    }
+  };
+
+  export const paymentExecute = async (req, res) => {
+    const { fid, uid, rate,customer,date,type } = req.params;
+    console.log(fid, uid, rate,customer,date,type ,"lfrlfd");
+    const { PayerID: payerId, paymentId } =req.query;
+    console.log( payerId, paymentId);
+    try {
+      const booking = await executePayment(fid, uid, rate,customer,date,type,payerId, paymentId);
+      res.status(200).json({ message: "Payment successful", booking });
+    } catch (error) {
+      res.status(500).json({ message: "Payment execution failed", error: error.message });
+    }
+  };
+  
   
   

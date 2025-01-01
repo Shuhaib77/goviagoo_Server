@@ -83,16 +83,16 @@ export const stayWithId = async (id) => {
   }
 };
 
-export const bookYourStay = async (uid, sid, body) => {
+export const bookYourStay = async (uid,id, body) => {
   const user = await Users.findById(uid);
-  const stay = await Stay.findById(sid);
+  const stay = await Stay.findById(id);
 
   if (!user || !stay) {
     throw new Error("Stay or user not found");
   }
 
   const { rate, roomNo, days, status, updatedAt } = body;
-  console.log(rate, roomNo, days, status, updatedAt);
+  console.log(rate, roomNo, days, status, updatedAt,"jdedf");
 
   let findBookings = await stayBooking.findOne({
     stay: stay._id,
@@ -109,7 +109,7 @@ export const bookYourStay = async (uid, sid, body) => {
       payment_method: "paypal",
     },
     redirect_urls: {
-      return_url: `http://localhost:3000/api/staybook/${uid}/${sid}/${rate}/${roomNo}/${days}/success`,
+      return_url: `http://localhost:3000/api/staybook/${uid}/${id}/${rate}/${roomNo}/${days}/success`,
       cancel_url: "http://localhost:3000/api/cancel",
     },
     transactions: [
@@ -168,14 +168,14 @@ export const bookYourStay = async (uid, sid, body) => {
 
 export const executePayment = async (
   uid,
-  sid,
+  id,
   rate,
   payerId,
   paymentId,
   roomNo,
   days
 ) => {
-  console.log(uid, sid, rate, payerId, paymentId, roomNo, days);
+  console.log(uid, id, rate, payerId, paymentId, roomNo, days);
 
   const execute_payment_json = {
     payer_id: payerId,
@@ -208,8 +208,10 @@ export const executePayment = async (
 
         // const paymentinfo = payment.payer.payer_info;
         // const transaction = payment.transactions;
+        console.log(uid,id,"check");
+        
         const user = await Users.findById(uid);
-        const stay = await Stay.findById(sid);
+        const stay = await Stay.findById(id);
 
         if (!user || !stay) {
           throw new Error("User or stay not found");

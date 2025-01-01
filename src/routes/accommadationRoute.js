@@ -10,8 +10,8 @@ AccommadationRote.get("/get/stay",allStay)
 AccommadationRote.get("/get/stay/location/:lat/:lng",getStayWithLocation)
 AccommadationRote.get("/get/stay/:id",stayById)
 
-AccommadationRote.post("/stay/book/:sid/:uid",BookStay)
-AccommadationRote.get("/staybook/:uid/:sid/:rate/:roomNo/:days/success",paymentExecute)
+AccommadationRote.post("/stay/book/:id/:uid",BookStay)
+AccommadationRote.get("/staybook/:uid/:id/:rate/:roomNo/:days/success",paymentExecute)
 AccommadationRote.post("/cancel")
 
 // proute.post('/pay/:id', trycatchmidle(createPayment));

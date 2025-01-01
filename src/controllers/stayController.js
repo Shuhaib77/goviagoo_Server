@@ -62,11 +62,13 @@ export const getStayWithLocation = async (req, res) => {
 };
 
 export const BookStay = async (req, res) => {
-  const { uid, sid } = req.params;
+  const { uid, id } = req.params;
+  console.log(uid ,id,"lololoo");
+  
   const body = req.body;
 
   try {
-    const data = await bookYourStay(uid, sid, body);
+    const data = await bookYourStay(uid, id, body);
     res.status(200).json({ message: "Booking initiated", data:data });
   } catch (error) {
     res.status(400).json({ message: "Booking failed", error: error.message });
@@ -74,15 +76,15 @@ export const BookStay = async (req, res) => {
 };
 
 export const paymentExecute = async (req, res) => {
-  const { uid, sid, rate,roomNo,days } = req.params;
-  console.log(uid, sid, rate,roomNo,days ,"lfrlfd");
+  const { uid, id, rate,roomNo,days } = req.params;
+  console.log(uid, id, rate,roomNo,days ,"lfrlfd");
   
   const { PayerID: payerId, paymentId } = req.query;
   console.log( payerId, paymentId);
   
 
   try {
-    const booking = await executePayment(uid, sid, rate, payerId, paymentId,roomNo,days);
+    const booking = await executePayment(uid, id, rate, payerId, paymentId,roomNo,days);
     res.status(200).json({ message: "Payment successful", booking });
   } catch (error) {
     res.status(500).json({ message: "Payment execution failed", error: error.message });
