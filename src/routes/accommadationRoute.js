@@ -1,5 +1,5 @@
 import express from "express";
-import { addStay, allStay, BookStay, getStayWithLocation, paymentExecute, stayById } from "../controllers/stayController.js";
+import { addStay, allStay, BookStay, getStayWithLocation, paymentExecute, StayBookingDetails, stayById } from "../controllers/stayController.js";
 
 
 
@@ -13,6 +13,7 @@ AccommadationRote.get("/get/stay/:id",stayById)
 AccommadationRote.post("/stay/book/:id/:uid",BookStay)
 AccommadationRote.get("/staybook/:uid/:id/:rate/:roomNo/:days/success",paymentExecute)
 AccommadationRote.post("/cancel")
+AccommadationRote.get("/stayBook/details/:id",StayBookingDetails)
 
 // proute.post('/pay/:id', trycatchmidle(createPayment));
 // proute.get('/:id/:totalAmount/success', trycatchmidle(executePayment) );

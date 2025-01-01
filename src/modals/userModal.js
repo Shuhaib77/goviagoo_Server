@@ -35,10 +35,16 @@ const userSchema = mongoose.Schema({
       ref:"Saveroadmap"
     }
   ],
-  bookings:[
+  stayBookings:[
     {
       type:Schema.ObjectId,
       ref:"stayBooking"
+    }
+  ],
+  foodBookings:[
+    {
+      type:Schema.ObjectId,
+      ref:"Foodspotbooking"
     }
   ]
   // googleId: {

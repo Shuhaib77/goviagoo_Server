@@ -2,7 +2,7 @@ import stayBooking from "../modals/bookStayModel.js";
 import Stay from "../modals/stayModel.js";
 import Users from "../modals/userModal.js";
 import paypal from "paypal-rest-sdk";
-import dotenv from "dotenv";
+import dotenv, { populate } from "dotenv";
 import cron from "node-cron";
 import moment from "moment";
 
@@ -83,7 +83,7 @@ export const stayWithId = async (id) => {
   }
 };
 
-export const bookYourStay = async (uid,id, body) => {
+export const bookYourStay = async (uid, id, body) => {
   const user = await Users.findById(uid);
   const stay = await Stay.findById(id);
 
@@ -92,7 +92,7 @@ export const bookYourStay = async (uid,id, body) => {
   }
 
   const { rate, roomNo, days, status, updatedAt } = body;
-  console.log(rate, roomNo, days, status, updatedAt,"jdedf");
+  console.log(rate, roomNo, days, status, updatedAt, "jdedf");
 
   let findBookings = await stayBooking.findOne({
     stay: stay._id,
@@ -208,8 +208,8 @@ export const executePayment = async (
 
         // const paymentinfo = payment.payer.payer_info;
         // const transaction = payment.transactions;
-        console.log(uid,id,"check");
-        
+        console.log(uid, id, "check");
+
         const user = await Users.findById(uid);
         const stay = await Stay.findById(id);
 
@@ -226,6 +226,8 @@ export const executePayment = async (
           roomNo: roomNo,
         });
         await booking.save();
+        user.stayBookings.push(booking._id);
+        await user.save();
 
         cron.schedule("0 0 * * *", async () => {
           const currentdate = moment().toDate();
@@ -244,10 +246,24 @@ export const executePayment = async (
         });
 
         return booking;
-       // return res.redirect('https://plashoe-e.vercel.app/paymentstatus');
+        // return res.redirect('https://plashoe-e.vercel.app/paymentstatus');
       }
     }
   );
-
- 
 };
+
+export const bookingDetails=async(id)=>{
+
+  const user=Users.findById(id).populate({
+    path:"stayBookings",
+    populate:"stay"
+
+  })
+  if(!user){
+    throw new Error ("stay booking not findd")
+  }
+  return user
+  // console.log(user);
+  
+
+}

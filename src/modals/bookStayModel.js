@@ -33,6 +33,6 @@ const stayBookingSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-const stayBooking = mongoose.model("StayBooking", stayBookingSchema);
+const stayBooking = mongoose.model("stayBooking", stayBookingSchema);
 
 export default stayBooking;

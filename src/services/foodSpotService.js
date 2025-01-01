@@ -213,6 +213,10 @@ export const executePayment = async (
            rate: rate,
       })
         await FoodBooking.save();
+        user.foodBookings.push(FoodBooking._id)
+        await user.save()
+
+
        // cron.schedule("0 0 * * *", async () => {
         //   const currentdate = moment().toDate();
         //   const expirdBookings = await stayBooking.updateMany(
@@ -272,3 +276,17 @@ export const executePayment = async (
 
 
 //   })
+
+export const foodBookings=async(id)=>{
+
+  const user=await Users.findById(id).populate({
+    path:"foodBookings",
+    populate:"foodSpot"
+  })
+  if(!user){
+    throw new Error("food spot booking not find")
+  }
+  return user
+
+
+}
