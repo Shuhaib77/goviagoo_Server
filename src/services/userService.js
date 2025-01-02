@@ -21,15 +21,24 @@ export const updateProfail = async (id, body) => {
 
 // --------------
 export const ViewAddedDestination = async (uid) => {
+  console.log(uid,"ll");
+  
   let user = await Users.findById(uid).populate({
     path: "savedRoadmaps",
     populate:{
       path:"destinations"
     }
   });
+  console.log( user.savedRoadmaps,"jejdjd");
+  
+  const stat=user.savedRoadmaps.find((item)=>item.status===false)
+  console.log(stat,"gdgd");
+  
+  
+  if (stat ) {
+    return stat;
 
-  if (!user) {
-    throw new Error("user not found!!");
   }
-  return user.savedRoadmaps;
+  throw new Error("user not found!!");
+  
 };

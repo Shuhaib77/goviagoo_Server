@@ -21,9 +21,10 @@ const roadMapSchema = mongoose.Schema({
       require: true,
     },
   ],
-  status: {
-    type: String,
-    require: true,
+  status:{
+    type:Boolean,
+    default:false
+
   },
   createdAt: {
     type: Date,

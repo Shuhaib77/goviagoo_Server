@@ -9,7 +9,7 @@ const saveSchema = mongoose.Schema({
     type:mongoose.Schema.ObjectId,
     require: "Users",
   },
-  destinationsId: [{
+  roadmapId: [{
     type: mongoose.Schema.ObjectId,
     ref: "Destination",
   }],

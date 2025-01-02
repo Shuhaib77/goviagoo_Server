@@ -222,7 +222,7 @@ export const executePayment = async (
           userId: user._id,
           status: true,
           days: days,
-          rate,
+          rate:rate,
           roomNo: roomNo,
         });
         await booking.save();

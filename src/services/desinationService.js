@@ -12,7 +12,7 @@ export const createDestination = async (name, body) => {
     // return res.status(404).json("destination alredy exist");
   }
 
-  const newData =new Destination(body);
+  const newData = new Destination(body);
   await newData.save();
   return newData;
 };
@@ -61,11 +61,13 @@ export const addedToRoadMap = async (did, uid) => {
     }
     let roaddestination = await Roadmap.findOne({
       userId: user._id,
+      status: false,
     });
     if (!roaddestination) {
       roaddestination = await Roadmap.create({
         userId: user._id,
         destinations: [],
+        status: false,
       });
     }
     console.log(roaddestination);
@@ -85,50 +87,117 @@ export const addedToRoadMap = async (did, uid) => {
 
 //addtoroadmap with map
 
+// export const addtomapwithmap = async (uid, dname, body) => {
+//   try {
+//     console.log(dname, "ede3d");
+//     const user = await Users.findById(uid);
+//     if (!user) {
+//       throw new Error("User not found");
+//     }
+//     let roadmaps = await Roadmap.findOne({ userId: uid }).populate({
+//       path: "destinations",
+//     });
+//     if (!roadmaps) {
+//       const createRoadMap = await Roadmap.create({
+//         userId: user._id,
+//         destinations: [],
+//       });
+
+//       const destination = await Destination.create({
+//         image: body.image[0],
+//         name: dname,
+//         location: {
+//           latitude: body?.location.lat,
+//           longitude: body.location.lon,
+//         },
+//         description: body.description,
+//         category: body.type,
+//         rating: null,
+//       });
+//       console.log(destination, "hyhyhy");
+
+//       createRoadMap.destinations.push(destination._id);
+//       await roadmaps.save();
+
+//       console.log(userroadmap);
+//       // throw new Error("roadmap not found for this user");
+//     }
+//     let names = await roadmaps.destinations.find((item) => item.name === dname);
+//     if (names) {
+//       throw new Error("destination alredy in your roadmaap");
+//     }
+//     let destination = await Destination.findOne({ name: dname });
+
+//     if (!destination) {
+//       destination = await Destination.create({
+//         image: body.image,
+//         name: dname,
+//         location: {
+//           latitude: body?.location.lat,
+//           longitude: body?.location.lon,
+//         },
+//         description: body.description,
+//         category: body.type,
+//         rating: null,
+//       });
+//     }
+//     let userroadmap = await Roadmap.findOne({ userId: user._id });
+//     roadmaps.destinations.push(destination._id);
+//     await roadmaps.save();
+//     const addedmap = user.savedRoadmaps.find(
+//       (item) => item.toString() === roadmaps._id.toString()
+//     );
+//     console.log(addedmap, "dkndknd");
+
+//     if (!addedmap) {
+//       user.savedRoadmaps.push(roadmaps._id);
+//       await user.save();
+//       console.log(userroadmap);
+//     }
+
+//     return roadmaps;
+//   } catch (error) {
+//     console.error("error in addtomapwithmap", error.message);
+//     throw error;
+//   }
+// };
 export const addtomapwithmap = async (uid, dname, body) => {
   try {
     console.log(dname, "ede3d");
+
     const user = await Users.findById(uid);
     if (!user) {
       throw new Error("User not found");
     }
-    let roadmaps = await Roadmap.findOne({ userId: uid }).populate({
+
+    let roadmaps = await Roadmap.findOne({
+      userId: uid,
+      status: false,
+    }).populate({
       path: "destinations",
     });
+
     if (!roadmaps) {
-      const createRoadMap = await Roadmap.create({
+      roadmaps = await Roadmap.create({
         userId: user._id,
         destinations: [],
+        status: false,
       });
-
-      const destination = await Destination.create({
-        image: body.image[0],
-        name: dname,
-        location: {
-          latitude: body?.location.lat,
-          longitude: body.location.lon,
-        },
-        description: body.description,
-        category: body.type,
-        rating: null,
-      });
-      console.log(destination, "hyhyhy");
-
-      roadmaps.destinations.push(destination._id);
-      await roadmaps.save();
-
-      console.log(userroadmap);
-      // throw new Error("roadmap not found for this user");
     }
-    let names = await roadmaps.destinations.find((item) => item.name === dname);
-    if (names) {
-      throw new Error("destination alredy in your roadmaap");
+
+    const existingDestination = roadmaps.destinations.find(
+      (item) => item.name === dname
+    );
+    if (existingDestination) {
+      throw new Error("Destination already exists in your roadmap");
     }
+
+    // Check if the destination exists in the database
     let destination = await Destination.findOne({ name: dname });
-
     if (!destination) {
+      // Create a new destination
       destination = await Destination.create({
-        image: body.image,
+        image: body.image[0],
         name: dname,
         location: {
           latitude: body?.location.lat,
@@ -139,30 +208,30 @@ export const addtomapwithmap = async (uid, dname, body) => {
         rating: null,
       });
     }
-    let userroadmap = await Roadmap.findOne({ userId: user._id });
+
     roadmaps.destinations.push(destination._id);
     await roadmaps.save();
-    const addedmap = user.savedRoadmaps.find(
+
+    const isRoadmapSaved = user.savedRoadmaps.some(
       (item) => item.toString() === roadmaps._id.toString()
     );
-    console.log(addedmap, "dkndknd");
 
-    if (!addedmap) {
+    if (!isRoadmapSaved) {
       user.savedRoadmaps.push(roadmaps._id);
       await user.save();
-      console.log(userroadmap);
     }
 
+    console.log("roadmap updated successfully");
     return roadmaps;
   } catch (error) {
-    console.error("error in addtomapwithmap", error.message);
+    console.error(error);
     throw error;
   }
 };
 
 export const deleteYourDestination = async (did, uid) => {
   try {
-    const roadMap = await Roadmap.findOne({ userId: uid });
+    const roadMap = await Roadmap.findOne({ userId: uid, status: true });
     if (!roadMap) {
       throw new Error("Road Map not found");
     }
@@ -218,38 +287,37 @@ export const savedRoadMap = async (rid, uid) => {
     throw new Error("User not found");
   }
 
-  const roadmap = await Roadmap.findById(rid);
+  const roadmap = await Roadmap.findOne({ _id: rid, status: false });
   if (!roadmap) {
     throw new Error("Road map not found");
   }
-  const destinations = roadmap.destinations;
+  const id = roadmap._id;
 
   const saveRoadMap = await Saveroadmap.create({
     userId: user._id,
-    destinationsId: destinations,
+    roadmapId: id,
   });
-
+  roadmap.status = true
+  roadmap.save()
   user.savedMap.push(saveRoadMap._id);
 
   user.savedRoadmaps = user.savedRoadmaps.filter(
     (mapId) => mapId.toString() !== rid
   );
+ await user.save();
 
-  await user.save();
-  await Roadmap.findByIdAndDelete(rid);
 
   return saveRoadMap;
 };
 
 export const viewSaved = async (id) => {
-  console.log(id,"swsw");
-   const user = await Users.findById(id).populate({
-    path:"savedMap",
-    populate:"destinationsId"
-
+  console.log(id, "swsw");
+  const user = await Users.findById(id).populate({
+    path: "savedMap",
+    populate: "destinationsId",
   });
   console.log(user);
-  
+
   if (!user) {
     throw new error("user not foundd");
   }
