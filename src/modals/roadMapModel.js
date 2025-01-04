@@ -26,6 +26,18 @@ const roadMapSchema = mongoose.Schema({
     default:false
 
   },
+  stayBookings:[{
+    type:String,
+    ref:"stayBooking",
+    require:true
+
+  }],
+  foodBookings:[{
+    type:String,
+    ref:"Foodspotbooking",
+    require:true
+
+  }],
   createdAt: {
     type: Date,
     default: Date.now,

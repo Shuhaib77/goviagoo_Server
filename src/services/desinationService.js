@@ -169,6 +169,7 @@ export const addtomapwithmap = async (uid, dname, body) => {
     if (!user) {
       throw new Error("User not found");
     }
+    // const roadmapdata= await  Roadmap.findById({useId:id})
 
     let roadmaps = await Roadmap.findOne({
       userId: uid,
@@ -231,7 +232,7 @@ export const addtomapwithmap = async (uid, dname, body) => {
 
 export const deleteYourDestination = async (did, uid) => {
   try {
-    const roadMap = await Roadmap.findOne({ userId: uid, status: true });
+    const roadMap = await Roadmap.findOne({ userId: uid, status: false });
     if (!roadMap) {
       throw new Error("Road Map not found");
     }
@@ -240,7 +241,7 @@ export const deleteYourDestination = async (did, uid) => {
     const deleteditemindex = await roadMap.destinations.findIndex((item) =>
       item.equals(did)
     );
-    console.log(deleteditemindex);
+    console.log(deleteditemindex, "eeded");
 
     if (deleteditemindex != -1) {
       roadMap.destinations.splice(deleteditemindex, 1);
@@ -297,15 +298,15 @@ export const savedRoadMap = async (rid, uid) => {
     userId: user._id,
     roadmapId: id,
   });
-  roadmap.status = true
-  roadmap.save()
+  roadmap.status = true;
+  roadmap.save();
   user.savedMap.push(saveRoadMap._id);
 
   user.savedRoadmaps = user.savedRoadmaps.filter(
     (mapId) => mapId.toString() !== rid
   );
- await user.save();
 
+  await user.save();
 
   return saveRoadMap;
 };
@@ -314,7 +315,14 @@ export const viewSaved = async (id) => {
   console.log(id, "swsw");
   const user = await Users.findById(id).populate({
     path: "savedMap",
-    populate: "destinationsId",
+    populate: {
+      path:"roadmapId",
+      populate:[
+        {path:"destinations"},
+        {path:"stayBookings"},
+        {path:"foodBookings"}
+      ]
+    }
   });
   console.log(user);
 

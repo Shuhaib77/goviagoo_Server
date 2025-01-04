@@ -3,6 +3,7 @@ import Foodspot from "../modals/foodSpotModal.js";
 import Users from "../modals/userModal.js";
 import paypal from 'paypal-rest-sdk'
 import dotenv from "dotenv";
+import Roadmap from "../modals/roadMapModel.js";
 
 
 dotenv.config();
@@ -84,7 +85,7 @@ export const foodwithLocation = async (lat, lng) => {
   }
 };
 
-export const bookYourFood = async(fid, uid, body) => {
+export const bookYourFood = async(fid, uid, body,rid) => {
   const { type,customer,rate,date } = body;
 
   // const [mon,year,day]=date.split("/")
@@ -110,7 +111,7 @@ export const bookYourFood = async(fid, uid, body) => {
       payment_method: "paypal",
     },
     redirect_urls: {
-      return_url: `http://localhost:3000/api/foodbook/${fid}/${uid}/${rate}/${type}/${date}/${customer}/success`,
+      return_url: `http://localhost:3000/api/foodbook/${fid}/${uid}/${rate}/${type}/${date}/${customer}/${rid}/success`,
       cancel_url: "http://localhost:3000/api/cancel",
     },
     transactions: [
@@ -159,9 +160,9 @@ export const bookYourFood = async(fid, uid, body) => {
 
 
 export const executePayment = async (
-  fid, uid, rate,customer,date,type, payerId, paymentId
+  fid, uid, rate,customer,date,type, payerId, paymentId,rid
 ) => {
-  console.log(fid, uid, rate,customer,date,type,"dnnj");
+  console.log(fid, uid, rate,customer,date,type,rid,"dnnj");
 
   const execute_payment_json = {
     payer_id: payerId,
@@ -198,6 +199,7 @@ export const executePayment = async (
         
         const user = await Users.findById(uid);
         const Food = await Foodspot.findById(fid);
+        const RoamapData=await Roadmap.findById(rid)
 
         if (!user || !Food) {
           throw new Error("User or stay not found");
@@ -213,8 +215,8 @@ export const executePayment = async (
            rate: rate,
       })
         await FoodBooking.save();
-        user.foodBookings.push(FoodBooking._id)
-        await user.save()
+        RoamapData.foodBookings.push(FoodBooking._id)
+        await RoamapData.save()
 
 
        // cron.schedule("0 0 * * *", async () => {
@@ -280,7 +282,7 @@ export const executePayment = async (
 export const foodBookings=async(id)=>{
 
   const user=await Users.findById(id).populate({
-    path:"foodBookings",
+    path:"r",
     populate:"foodSpot"
   })
   if(!user){

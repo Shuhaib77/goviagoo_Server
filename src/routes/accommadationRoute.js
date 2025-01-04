@@ -10,8 +10,8 @@ AccommadationRote.get("/get/stay",allStay)
 AccommadationRote.get("/get/stay/location/:lat/:lng",getStayWithLocation)
 AccommadationRote.get("/get/stay/:id",stayById)
 
-AccommadationRote.post("/stay/book/:id/:uid",BookStay)
-AccommadationRote.get("/staybook/:uid/:id/:rate/:roomNo/:days/success",paymentExecute)
+AccommadationRote.post("/stay/book/:id/:uid/:rid",BookStay)
+AccommadationRote.get("/staybook/:uid/:id/:rate/:roomNo/:days/:rid/success",paymentExecute)
 AccommadationRote.post("/cancel")
 AccommadationRote.get("/stayBook/details/:id",StayBookingDetails)
 

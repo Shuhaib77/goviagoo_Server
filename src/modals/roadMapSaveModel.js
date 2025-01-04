@@ -6,16 +6,17 @@ const saveSchema = mongoose.Schema({
     require: true,
   },
   userId: {
-    type:mongoose.Schema.ObjectId,
+    type: mongoose.Schema.ObjectId,
     require: "Users",
   },
-  roadmapId: [{
-    type: mongoose.Schema.ObjectId,
-    ref: "Destination",
-  }],
+  roadmapId: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Roadmap",
+    },
+  ],
 });
 
+const Saveroadmap = mongoose.model("Saveroadmap", saveSchema);
 
-const Saveroadmap=mongoose.model("Saveroadmap",saveSchema)
-
-export default Saveroadmap
+export default Saveroadmap;

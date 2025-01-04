@@ -63,11 +63,11 @@ export const getFoodWithLocation = async (req, res) => {
 };
 
 export const BookFoodSpot = async (req, res) => {
-  const { fid, uid } = req.params;
+  const { fid, uid,rid } = req.params;
   console.log(uid, fid, "lololoo");
   const body = req.body;
   try {
-    const data = await bookYourFood(fid, uid, body);
+    const data = await bookYourFood(fid, uid, body,rid);
     res.status(200).json({ message: "Booking initiated", data: data });
   } catch (error) {
     res.status(400).json({ message: "Booking failed", error: error.message });
@@ -75,8 +75,8 @@ export const BookFoodSpot = async (req, res) => {
 };
 
 export const paymentExecute = async (req, res) => {
-  const { fid, uid, rate, customer, date, type } = req.params;
-  console.log(fid, uid, rate, customer, date, type, "lfrlfd");
+  const { fid, uid, rate, customer, date, type,rid } = req.params;
+  console.log(fid, uid, rate, customer, date, type,rid, "lfrlfd");
   const { PayerID: payerId, paymentId } = req.query;
   console.log(payerId, paymentId);
   try {
@@ -88,7 +88,8 @@ export const paymentExecute = async (req, res) => {
       date,
       type,
       payerId,
-      paymentId
+      paymentId,
+      rid
     );
     res.status(200).json({ message: "Payment successful", booking });
   } catch (error) {

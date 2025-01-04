@@ -5,6 +5,7 @@ import paypal from "paypal-rest-sdk";
 import dotenv, { populate } from "dotenv";
 import cron from "node-cron";
 import moment from "moment";
+import Roadmap from "../modals/roadMapModel.js";
 
 dotenv.config();
 
@@ -83,9 +84,10 @@ export const stayWithId = async (id) => {
   }
 };
 
-export const bookYourStay = async (uid, id, body) => {
+export const bookYourStay = async (uid, id, body,rid) => {
   const user = await Users.findById(uid);
   const stay = await Stay.findById(id);
+  // const rmapdata = await Roadmap.findById(rid);
 
   if (!user || !stay) {
     throw new Error("Stay or user not found");
@@ -109,7 +111,7 @@ export const bookYourStay = async (uid, id, body) => {
       payment_method: "paypal",
     },
     redirect_urls: {
-      return_url: `http://localhost:3000/api/staybook/${uid}/${id}/${rate}/${roomNo}/${days}/success`,
+      return_url: `http://localhost:3000/api/staybook/${uid}/${id}/${rate}/${roomNo}/${days}/${rid}/success`,
       cancel_url: "http://localhost:3000/api/cancel",
     },
     transactions: [
@@ -173,9 +175,10 @@ export const executePayment = async (
   payerId,
   paymentId,
   roomNo,
-  days
+  days,
+  rid
 ) => {
-  console.log(uid, id, rate, payerId, paymentId, roomNo, days);
+  console.log(uid, id, rate, payerId, paymentId, roomNo, days,rid);
 
   const execute_payment_json = {
     payer_id: payerId,
@@ -212,6 +215,7 @@ export const executePayment = async (
 
         const user = await Users.findById(uid);
         const stay = await Stay.findById(id);
+        const bookingDetail=await Roadmap.findById(rid)
 
         if (!user || !stay) {
           throw new Error("User or stay not found");
@@ -226,8 +230,11 @@ export const executePayment = async (
           roomNo: roomNo,
         });
         await booking.save();
-        user.stayBookings.push(booking._id);
-        await user.save();
+        bookingDetail.stayBookings.push(booking._id);
+       
+        await bookingDetail.save();
+        // user.stayBookings.push(booking._id)
+        user.save()
 
         cron.schedule("0 0 * * *", async () => {
           const currentdate = moment().toDate();

@@ -59,13 +59,13 @@ export const getStayWithLocation = async (req, res) => {
 };
 
 export const BookStay = async (req, res) => {
-  const { uid, id } = req.params;
-  console.log(uid, id, "lololoo");
+  const { uid, id,rid } = req.params;
+  console.log(uid, id,rid, "lololoo");
 
   const body = req.body;
 
   try {
-    const data = await bookYourStay(uid, id, body);
+    const data = await bookYourStay(uid, id, body,rid);
     res.status(200).json({ message: "Booking initiated", data: data });
   } catch (error) {
     res.status(400).json({ message: "Booking failed", error: error.message });
@@ -73,8 +73,8 @@ export const BookStay = async (req, res) => {
 };
 
 export const paymentExecute = async (req, res) => {
-  const { uid, id, rate, roomNo, days } = req.params;
-  console.log(uid, id, rate, roomNo, days, "lfrlfd");
+  const { uid, id, rate, roomNo, days,rid } = req.params;
+  console.log(uid, id, rate, roomNo, days,rid, "lfrlfd");
 
   const { PayerID: payerId, paymentId } = req.query;
   console.log(payerId, paymentId);
@@ -87,7 +87,8 @@ export const paymentExecute = async (req, res) => {
       payerId,
       paymentId,
       roomNo,
-      days
+      days,
+      rid
     );
     res.status(200).json({ message: "Payment successful", booking });
   } catch (error) {

@@ -11,8 +11,8 @@ foodRoute.get("/get/foodspot/:id",foodById)
 foodRoute.get("/get/foodspot/location/:lat/:lng",getFoodWithLocation)
 
 
-foodRoute.post("/food/book/:fid/:uid",BookFoodSpot)
-foodRoute.get("/foodbook/:fid/:uid/:rate/:type/:date/:customer/success/",paymentExecute)
+foodRoute.post("/food/book/:fid/:uid/:rid",BookFoodSpot)
+foodRoute.get("/foodbook/:fid/:uid/:rate/:type/:date/:customer/:rid/success/",paymentExecute)
 foodRoute.get("/cancel")
 foodRoute.get("/foodBook/details/:id",foodBokingDetails)
 
