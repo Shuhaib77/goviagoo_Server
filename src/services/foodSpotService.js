@@ -1,10 +1,9 @@
 import Foodspotbooking from "../modals/bookFoodSpotModal.js";
 import Foodspot from "../modals/foodSpotModal.js";
 import Users from "../modals/userModal.js";
-import paypal from 'paypal-rest-sdk'
+import paypal from "paypal-rest-sdk";
 import dotenv from "dotenv";
 import Roadmap from "../modals/roadMapModel.js";
-
 
 dotenv.config();
 
@@ -85,27 +84,26 @@ export const foodwithLocation = async (lat, lng) => {
   }
 };
 
-export const bookYourFood = async(fid, uid, body,rid) => {
-  const { type,customer,rate,date } = body;
+export const bookYourFood = async (fid, uid, body, rid) => {
+  const { type, customer, rate, date } = body;
 
   // const [mon,year,day]=date.split("/")
   // const update=`${day}-${mon}-${day}`
 
-  console.log(date,"gggg");
-  
-  
-  console.log(type,customer,rate,date);
-  if(!type || !customer || !rate ||!date ){
-    throw new Error("type,customer,rate,date field are require")
+  console.log(date, "gggg");
+
+  console.log(type, customer, rate, date);
+  if (!type || !customer || !rate || !date) {
+    throw new Error("type,customer,rate,date field are require");
   }
   const user = await Users.findById(uid);
   const foodspot = await Foodspot.findById(fid);
   // console.log(user,foodspot);
-  
+
   if (!user || !foodspot) {
     throw new Error("user or fodspot not find");
   }
- const create_payment_json = {
+  const create_payment_json = {
     intent: "sale",
     payer: {
       payment_method: "paypal",
@@ -136,33 +134,38 @@ export const bookYourFood = async(fid, uid, body,rid) => {
     ],
   };
 
-
-   const url = await new Promise((resolve, reject) => {
-      paypal.payment.create(create_payment_json, function (error, payment) {
-        if (error) {
-          console.error("Error creating payment:", error);
-          return reject("Payment creation failed");
-        } else {
-          for (let link of payment.links) {
-            if (link.rel === "approval_url") {
-              console.log(link.href);
-              return resolve({ approval_url: link.href });
-            }
+  const url = await new Promise((resolve, reject) => {
+    paypal.payment.create(create_payment_json, function (error, payment) {
+      if (error) {
+        console.error("Error creating payment:", error);
+        return reject("Payment creation failed");
+      } else {
+        for (let link of payment.links) {
+          if (link.rel === "approval_url") {
+            console.log(link.href);
+            return resolve({ approval_url: link.href });
           }
-          return reject("No approval URL found");
         }
-      });
+        return reject("No approval URL found");
+      }
     });
-  
-    return url;
+  });
+
+  return url;
 };
 
-
-
 export const executePayment = async (
-  fid, uid, rate,customer,date,type, payerId, paymentId,rid
+  fid,
+  uid,
+  rate,
+  customer,
+  date,
+  type,
+  payerId,
+  paymentId,
+  rid
 ) => {
-  console.log(fid, uid, rate,customer,date,type,rid,"dnnj");
+  console.log(fid, uid, rate, customer, date, type, rid, "dnnj");
 
   const execute_payment_json = {
     payer_id: payerId,
@@ -195,31 +198,30 @@ export const executePayment = async (
 
         // const paymentinfo = payment.payer.payer_info;
         // const transaction = payment.transactions;
-        console.log(fid,uid,"check");
-        
+        console.log(fid, uid, "check");
+
         const user = await Users.findById(uid);
         const Food = await Foodspot.findById(fid);
-        const RoamapData=await Roadmap.findById(rid)
+        const RoamapData = await Roadmap.findById(rid);
 
         if (!user || !Food) {
           throw new Error("User or stay not found");
         }
 
         const FoodBooking = Foodspotbooking({
-          foodSpot:Food._id,
-           userId: user._id,
-           status:true,
-           type:type,
-           date:date,
-           customers:customer,
-           rate: rate,
-      })
+          foodSpot: Food._id,
+          userId: user._id,
+          status: true,
+          type: type,
+          date: date,
+          customers: customer,
+          rate: rate,
+        });
         await FoodBooking.save();
-        RoamapData.foodBookings.push(FoodBooking._id)
-        await RoamapData.save()
+        RoamapData.foodBookings.push(FoodBooking._id);
+        await RoamapData.save();
 
-
-       // cron.schedule("0 0 * * *", async () => {
+        // cron.schedule("0 0 * * *", async () => {
         //   const currentdate = moment().toDate();
         //   const expirdBookings = await stayBooking.updateMany(
         //     {
@@ -236,15 +238,11 @@ export const executePayment = async (
         // });
 
         return FoodBooking;
-       // return res.redirect('https://plashoe-e.vercel.app/paymentstatus');
+        // return res.redirect('https://plashoe-e.vercel.app/paymentstatus');
       }
     }
   );
-
- 
 };
-
-
 
 // const check = Foodspotbooking({
 //      foodSpot: {
@@ -276,19 +274,15 @@ export const executePayment = async (
 //         require: true,
 //       },
 
-
 //   })
 
-export const foodBookings=async(id)=>{
-
-  const user=await Users.findById(id).populate({
-    path:"r",
-    populate:"foodSpot"
-  })
-  if(!user){
-    throw new Error("food spot booking not find")
+export const foodBookings = async (id) => {
+  const user = await Users.findById(id).populate({
+    path: "r",
+    populate: "foodSpot",
+  });
+  if (!user) {
+    throw new Error("food spot booking not find");
   }
-  return user
-
-
-}
+  return user;
+};
