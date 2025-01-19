@@ -1,10 +1,10 @@
 import mongoose, { Schema } from "mongoose";
 
 const foodSpotBookingSchema = mongoose.Schema({
-  foodSpot: {
+  foodSpot: [{
     type: mongoose.Schema.ObjectId,
     ref: "Foodspot",
-  },
+  }],
   userId: {
     type: mongoose.Schema.ObjectId,
     ref: "Users",

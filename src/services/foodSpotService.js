@@ -278,8 +278,8 @@ export const executePayment = async (
 
 export const foodBookings = async (id) => {
   const user = await Users.findById(id).populate({
-    path: "r",
-    populate: "foodSpot",
+    path: "savedMap",
+    populate: "foodBookings",
   });
   if (!user) {
     throw new Error("food spot booking not find");

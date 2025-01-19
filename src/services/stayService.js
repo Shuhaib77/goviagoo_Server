@@ -260,10 +260,12 @@ export const executePayment = async (
 };
 
 export const bookingDetails=async(id)=>{
+  console.log(id,"xsx");
+  
 
   const user=Users.findById(id).populate({
-    path:"stayBookings",
-    populate:"stay"
+    path:"savedMap",
+    populate:"stayBookngs"
 
   })
   if(!user){

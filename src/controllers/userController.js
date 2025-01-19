@@ -26,8 +26,11 @@ export const viewRoadmap=async(req,res)=>{
   if(!id){
     res.status(404).json({message:"user not found"})
   }
-
+ console.log(id,"mnmnnmn");
+ 
   const data= await ViewAddedDestination(id)
+  console.log(data,"dww");
+  
   if(!data){
    return res.status(404).json({message:"not found your road Map"})
   }

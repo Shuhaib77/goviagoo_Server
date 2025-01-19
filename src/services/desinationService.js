@@ -163,7 +163,7 @@ export const addedToRoadMap = async (did, uid) => {
 // };
 export const addtomapwithmap = async (uid, dname, body) => {
   try {
-    console.log(dname, "ede3d");
+    console.log(uid,dname, "ede3d");
 
     const user = await Users.findById(uid);
     if (!user) {
@@ -316,13 +316,14 @@ export const viewSaved = async (id) => {
   const user = await Users.findById(id).populate({
     path: "savedMap",
     populate: {
-      path:"roadmapId",
-      populate:[
-        {path:"destinations"},
-        {path:"stayBookings"},
-        {path:"foodBookings"}
-      ]
-    }
+      path: "roadmapId",
+      populate: [
+        { path: "destinations" },
+        { path: "stayBookings", populate: { path: "stay" } },
+        {path: "foodBookings",populate: { path: "foodSpot" },
+        },
+      ],
+    },
   });
   console.log(user);
 
