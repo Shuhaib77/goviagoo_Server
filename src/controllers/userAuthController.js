@@ -27,6 +27,8 @@ export const register = async (req, res) => {
   if (!e) {
     return res.status(404).json({ message: "email not found" });
   }
+  console.log(email,password);
+  
   const otp = generateOtp();
   storeOtp(email, otp, otpStore);
   await sendEmail(email, `your otp is ${otp} is valide only 5 minutes`, otp);

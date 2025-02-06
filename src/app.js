@@ -18,7 +18,7 @@ app.use('/api',destinationRoute)
 app.use('/api',AccommadationRote)
 app.use('/api',foodRoute)
 
-
+    
 
 
 
