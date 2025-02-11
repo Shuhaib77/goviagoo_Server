@@ -100,12 +100,14 @@ export const paymentExecute = async (req, res) => {
 
 export const StayBookingDetails = async (req, res) => {
   const { id } = req.params;
+  console.log(id,"hhh");
+  
   if (!id) {
     res.status(404).json({ message: "user no found" });
   }
   const data = await bookingDetails(id);
   if (!data) {
-    res.status(404).json({ message: "booking not find" });x
+    res.status(404).json({ message: "booking not find" })
   }
   res.status(200).json({ message: "stay booking findede" ,data:data});
 };

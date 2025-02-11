@@ -101,6 +101,8 @@ export const paymentExecute = async (req, res) => {
 
 export const foodBokingDetails = async (req, res) => {
   const { id } = req.params;
+  console.log(id,"koko");
+  
   if (!id) {
     return res.status(404).json({ message: "user not founnd" });
   }

@@ -267,10 +267,15 @@ export const bookingDetails=async(id)=>{
     path:"savedMap",
     populate:{
       path:"roadmapId",
-      populate:"stayBookings"
+      populate:{
+        path:"stayBookings",
+        populate:"stay"
+      }
     }
 
   })
+  console.log(user,"ghjjh");
+  
   if(!user){
     throw new Error ("stay booking not found")
   }
