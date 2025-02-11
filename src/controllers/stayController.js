@@ -105,7 +105,7 @@ export const StayBookingDetails = async (req, res) => {
   }
   const data = await bookingDetails(id);
   if (!data) {
-    res.status(404).json({ message: "booking not find" });
+    res.status(404).json({ message: "booking not find" });x
   }
   res.status(200).json({ message: "stay booking findede" ,data:data});
 };

@@ -263,13 +263,16 @@ export const bookingDetails=async(id)=>{
   console.log(id,"xsx");
   
 
-  const user=Users.findById(id).populate({
+  const user=await Users.findById(id).populate({
     path:"savedMap",
-    populate:"stayBookngs"
+    populate:{
+      path:"roadmapId",
+      populate:"stayBookings"
+    }
 
   })
   if(!user){
-    throw new Error ("stay booking not findd")
+    throw new Error ("stay booking not found")
   }
   return user
   // console.log(user);
