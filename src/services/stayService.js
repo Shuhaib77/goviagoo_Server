@@ -111,8 +111,8 @@ export const bookYourStay = async (uid, id, body,rid) => {
       payment_method: "paypal",
     },
     redirect_urls: {
-      return_url: `http://localhost:3000/api/staybook/${uid}/${id}/${rate}/${roomNo}/${days}/${rid}/success`,
-      cancel_url: "http://localhost:3000/api/cancel",
+      return_url: `https://goviagoo-server.onrender.com/api/staybook/${uid}/${id}/${rate}/${roomNo}/${days}/${rid}/success`,
+      cancel_url: "https://goviagoo-server.onrender.com/api/cancel",
     },
     transactions: [
       {
