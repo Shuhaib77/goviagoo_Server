@@ -234,7 +234,8 @@ export const executePayment = async (
        
         await bookingDetail.save();
         // user.stayBookings.push(booking._id)
-        user.save()
+        await user.save()
+        res.redirect("https://goviagoo.vercel.app/roadmap");
 
         cron.schedule("0 0 * * *", async () => {
           const currentdate = moment().toDate();
@@ -253,7 +254,7 @@ export const executePayment = async (
         });
 
         return booking;
-        // return res.redirect('https://plashoe-e.vercel.app/paymentstatus');
+        
       }
     }
   );

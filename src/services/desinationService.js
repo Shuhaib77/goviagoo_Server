@@ -194,10 +194,10 @@ export const addtomapwithmap = async (uid, dname, body) => {
       throw new Error("Destination already exists in your roadmap");
     }
 
-    // Check if the destination exists in the database
+
     let destination = await Destination.findOne({ name: dname });
     if (!destination) {
-      // Create a new destination
+      // create new dest
       destination = await Destination.create({
         image: body.image[0],
         name: dname,
