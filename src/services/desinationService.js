@@ -49,20 +49,19 @@ export const addedToRoadMap = async (did, uid) => {
   try {
     const destination = await Destination.findById(did);
     if (!destination) {
-      throw new Error("destination not find!");
+      throw new Error("Destination not found!");
     }
-    console.log(destination);
 
     const user = await Users.findById(uid);
-    console.log(user);
-
     if (!user) {
-      throw new Error("user not found!");
+      throw new Error("User not found!");
     }
+
     let roaddestination = await Roadmap.findOne({
       userId: user._id,
       status: false,
     });
+
     if (!roaddestination) {
       roaddestination = await Roadmap.create({
         userId: user._id,
@@ -70,20 +69,22 @@ export const addedToRoadMap = async (did, uid) => {
         status: false,
       });
     }
-    console.log(roaddestination);
-    const check = await roaddestination.destinations.some(
-      (item) => item.toString() == destination._id.toString()
-    );
+
+    const check = roaddestination.destinations.includes(destination._id);
     if (check) {
-      throw new Error("destination alredy in your roadmap");
+      throw new Error("Destination already in your roadmap");
     }
+
     roaddestination.destinations.push(destination._id);
     await roaddestination.save();
+
     return roaddestination;
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return { error: error.message };
   }
 };
+
 
 //addtoroadmap with map
 
