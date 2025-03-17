@@ -235,8 +235,7 @@ export const executePayment = async (
         await bookingDetail.save();
         // user.stayBookings.push(booking._id)
         await user.save()
-        res.redirect("https://goviagoo.vercel.app/roadmap");
-
+       
         cron.schedule("0 0 * * *", async () => {
           const currentdate = moment().toDate();
           const expirdBookings = await stayBooking.updateMany(
@@ -252,8 +251,9 @@ export const executePayment = async (
             `${expirdBookings.modifiedCount} bookings updated to false`
           );
         });
+        return res.redirect("https://goviagoo.vercel.app/roadmap");
 
-        return booking;
+        // return booking;
         
       }
     }
